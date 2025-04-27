@@ -10,7 +10,7 @@ import (
 )
 
 const (
-	KafkaAddr  = "localhost:29092"
+	KafkaAddr  = "kafka:29092"
 	KafkaTopic = "segments"
 )
 
