@@ -7,11 +7,12 @@ services:
       - "8010:8010"
     depends_on:
       zookeeper:
-        condition: service_started
+        condition: service_healthy
       kafka:
-        condition: service_started
+        condition: service_healthy
     networks:
       - kr-network
+
   zookeeper:
     image: confluentinc/cp-zookeeper:latest
     container_name: zookeeper
@@ -20,6 +21,12 @@ services:
       ZOOKEEPER_TICK_TIME: 2000
     ports:
       - "22181:2181"
+    healthcheck:
+      test: ["CMD", "nc", "-zv", "localhost", "2181"]
+      interval: 10s
+      retries: 5
+      start_period: 10s
+      timeout: 5s
     networks:
       - kr-network
 
@@ -39,6 +46,12 @@ services:
       KAFKA_LISTENER_SECURITY_PROTOCOL: PLAINTEXT
       KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+    healthcheck:
+      test: ["CMD", "nc", "-zv", "localhost", "9092"]
+      interval: 10s
+      retries: 5
+      start_period: 10s
+      timeout: 5s
     networks:
       - kr-network
 
