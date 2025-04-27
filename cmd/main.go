@@ -20,8 +20,18 @@ import (
 func main() {
 	// запуск consumer-а
 	go func() {
-		if err := kafka.ReadFromKafka(); err != nil {
-			fmt.Println(err)
+		maxRetries := 5
+		retryInterval := 5 * time.Second
+	
+		for i := 0; i < maxRetries; i++ {
+			if err := kafka.ReadFromKafka(); err != nil {
+				fmt.Println(err)
+				// Если ошибка, ждем 5 секунд и пробуем снова
+				time.Sleep(retryInterval)
+			} else {
+				// Если подключение успешно
+				break
+			}
 		}
 	}()
 
