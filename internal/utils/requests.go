@@ -10,19 +10,19 @@ import (
 )
 
 type Segment struct {
-	SegmentNumber  int       `json:"segment_number"`
-	TotalSegments  int       `json:"total_segments"`
+	SegmentNumber  int       `json:"sequence_number"`
+	TotalSegments  int       `json:"total_part"`
 	Username       string    `json:"username"`
-	SendTime       time.Time `json:"send_time"`
-	SegmentPayload string    `json:"payload"`
+	SendTime       time.Time `json:"timestamp"`
+	SegmentPayload string    `json:"message_part"`
 }
 
 
 type SendRequest struct {
     Id       int       `json:"id,omitempty"`
     Username string    `json:"username"`
-    Text     string    `json:"data"`
-    SendTime time.Time `json:"send_time"`
+    Text     string    `json:"message"`
+    SendTime time.Time `json:"timestamp"`
 }
 
 type Message struct {
@@ -35,9 +35,9 @@ type Message struct {
 
 type ReceiveRequest struct {
     Username string    `json:"username"`
-    Text     string    `json:"data"`
-    SendTime time.Time `json:"send_time"`
-    Error    string    `json:"error"`
+    Text     string    `json:"message"`
+    SendTime time.Time `json:"timestamp"`
+    Error    string    `json:"error_flag"`
 }
 
 func SplitMessage(payload string, segmentSize int) []string {
