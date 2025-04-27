@@ -7,11 +7,7 @@ import (
 	"github.com/IBM/sarama"
 	"github.com/totorialman/kr-net-6-sem/internal/utils"
 	"github.com/totorialman/kr-net-6-sem/internal/storage"
-)
-
-const (
-	KafkaAddr  = "kafka:29092"
-	KafkaTopic = "segments"
+	"github.com/totorialman/kr-net-6-sem/internal/consts"
 )
 
 func ReadFromKafka() error {
@@ -19,14 +15,14 @@ func ReadFromKafka() error {
 	config.Consumer.Return.Errors = true
 
 	// создание consumer-а
-	consumer, err := sarama.NewConsumer([]string{KafkaAddr}, config)
+	consumer, err := sarama.NewConsumer([]string{consts.KafkaAddr}, config)
 	if err != nil {
 		return fmt.Errorf("error creating consumer: %w", err)
 	}
 	defer consumer.Close()
 
 	// подключение consumer-а к топика
-	partitionConsumer, err := consumer.ConsumePartition(KafkaTopic, 0, sarama.OffsetNewest)
+	partitionConsumer, err := consumer.ConsumePartition(consts.KafkaTopic, 0, sarama.OffsetNewest)
 	if err != nil {
 		return fmt.Errorf("error opening topic: %w", err)
 	}
@@ -53,7 +49,7 @@ func WriteToKafka(segment utils.Segment) error {
 	config.Producer.Return.Successes = true
 
 	// создание producer-а
-	producer, err := sarama.NewSyncProducer([]string{KafkaAddr}, config)
+	producer, err := sarama.NewSyncProducer([]string{consts.KafkaAddr}, config)
 	if err != nil {
 		return fmt.Errorf("error creating producer: %w", err)
 	}
@@ -62,7 +58,7 @@ func WriteToKafka(segment utils.Segment) error {
 	// превращение segment в сообщение для Kafka
 	segmentString, _ := json.Marshal(segment)
 	message := &sarama.ProducerMessage{
-		Topic: KafkaTopic,
+		Topic: consts.KafkaTopic,
 		Value: sarama.StringEncoder(segmentString),
 	}
 
