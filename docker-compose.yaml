@@ -5,6 +5,11 @@ services:
       dockerfile: ./build/main.Dockerfile
     ports:
       - "8010:8010"
+    depends_on:
+      zookeeper:
+        condition: service_started
+      kafka:
+        condition: service_started
     networks:
       - kr-network
   zookeeper:
