@@ -8,6 +8,6 @@ const (
 	CodeUrl          = "http://192.168.123.120:8000/code" // адрес канального уровня
 	SegmentSize      = 100
 	ReceiveUrl = "http://192.168.123.140:3000/receive" // адрес websocket-сервера прикладного уровня
-	KafkaAddr  = "kafka:29092"
+	KafkaAddr  = "kafka:9092"
 	KafkaTopic = "segments"
 )
