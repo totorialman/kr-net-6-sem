@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"log"
 	"math"
 	"net/http"
 	"time"
@@ -90,16 +91,33 @@ func SendSegment(body Segment) {
 	}
 }
 func SendReceiveRequest(body ReceiveRequest) {
-	reqBody, _ := json.Marshal(body)
+	// Логируем начало отправки
+	log.Printf("Sending request to %s: %+v", consts.ReceiveUrl, body)
 
-	req, _ := http.NewRequest("POST", consts.ReceiveUrl, bytes.NewBuffer(reqBody))
-	req.Header.Add("Content-Type", "application/json")
-
-	client := &http.Client{}
-	resp, err := client.Do(req)
+	// Маршалим в JSON
+	reqBody, err := json.Marshal(body)
 	if err != nil {
+		log.Printf("Error marshaling request body: %v", err)
 		return
 	}
 
+	// Создаем HTTP-запрос
+	req, err := http.NewRequest("POST", consts.ReceiveUrl, bytes.NewBuffer(reqBody))
+	if err != nil {
+		log.Printf("Error creating request: %v", err)
+		return
+	}
+	req.Header.Set("Content-Type", "application/json")
+
+	// Отправляем запрос
+	client := &http.Client{}
+	resp, err := client.Do(req)
+	if err != nil {
+		log.Printf("Failed to send request: %v", err)
+		return
+	}
 	defer resp.Body.Close()
+
+	// Логируем успешный ответ
+	log.Printf("Request sent successfully. Status code: %d", resp.StatusCode)
 }
