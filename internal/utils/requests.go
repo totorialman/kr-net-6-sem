@@ -13,7 +13,7 @@ import (
 
 type Segment struct {
 	SegmentNumber  int       `json:"sequence_number"`
-	TotalSegments  int       `json:"total_part"`
+	TotalSegments  int       `json:"total_parts"`
 	Username       string    `json:"username"`
 	SendTime       time.Time `json:"timestamp"`
 	SegmentPayload string    `json:"message_part"`
