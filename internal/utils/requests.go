@@ -3,9 +3,11 @@ package utils
 import (
 	"bytes"
 	"encoding/json"
+	"fmt"
 	"math"
 	"net/http"
 	"time"
+
 	"github.com/totorialman/kr-net-6-sem/internal/consts"
 )
 
@@ -17,12 +19,11 @@ type Segment struct {
 	SegmentPayload string    `json:"message_part"`
 }
 
-
 type SendRequest struct {
-    Id       int       `json:"id,omitempty"`
-    Username string    `json:"username"`
-    Text     string    `json:"message"`
-    SendTime time.Time `json:"timestamp"`
+	Id       int       `json:"id,omitempty"`
+	Username string    `json:"username"`
+	Text     string    `json:"message"`
+	SendTime time.Time `json:"timestamp"`
 }
 
 type Message struct {
@@ -34,10 +35,10 @@ type Message struct {
 }
 
 type ReceiveRequest struct {
-    Username string    `json:"username"`
-    Text     string    `json:"message"`
-    SendTime time.Time `json:"timestamp"`
-    Error    string    `json:"error_flag"`
+	Username string    `json:"username"`
+	Text     string    `json:"message"`
+	SendTime time.Time `json:"timestamp"`
+	Error    string    `json:"error_flag"`
 }
 
 func SplitMessage(payload string, segmentSize int) []string {
@@ -54,9 +55,44 @@ func SplitMessage(payload string, segmentSize int) []string {
 }
 
 func SendSegment(body Segment) {
+	// Логируем начало отправки
+	fmt.Printf("Sending segment: %+v\n", body)
+
+	// Маршалим тело запроса
+	reqBody, err := json.Marshal(body)
+	if err != nil {
+		fmt.Printf("Error marshaling JSON: %v\n", err)
+		return
+	}
+
+	// Создаем запрос
+	req, err := http.NewRequest("POST", consts.CodeUrl, bytes.NewBuffer(reqBody))
+	if err != nil {
+		fmt.Printf("Error creating request: %v\n", err)
+		return
+	}
+	req.Header.Set("Content-Type", "application/json")
+
+	// Отправляем запрос
+	client := &http.Client{}
+	resp, err := client.Do(req)
+	if err != nil {
+		fmt.Printf("HTTP request error: %v\n", err)
+		return
+	}
+	defer resp.Body.Close()
+
+	// Проверяем статус-код
+	if resp.StatusCode >= 200 && resp.StatusCode < 300 {
+		fmt.Printf("Successfully sent segment to %s (status: %d)\n", consts.CodeUrl, resp.StatusCode)
+	} else {
+		fmt.Printf("Failed to send segment. Server responded with status: %d\n", resp.StatusCode)
+	}
+}
+func SendReceiveRequest(body ReceiveRequest) {
 	reqBody, _ := json.Marshal(body)
 
-	req, _ := http.NewRequest("POST", consts.CodeUrl, bytes.NewBuffer(reqBody))
+	req, _ := http.NewRequest("POST", consts.ReceiveUrl, bytes.NewBuffer(reqBody))
 	req.Header.Add("Content-Type", "application/json")
 
 	client := &http.Client{}
@@ -66,19 +102,4 @@ func SendSegment(body Segment) {
 	}
 
 	defer resp.Body.Close()
-}
-
-func SendReceiveRequest(body ReceiveRequest) {
-   reqBody, _ := json.Marshal(body)
-   
-   req, _ := http.NewRequest("POST", consts.ReceiveUrl, bytes.NewBuffer(reqBody))
-   req.Header.Add("Content-Type", "application/json")
-   
-   client := &http.Client{}
-   resp, err := client.Do(req)
-   if err != nil {
-     return
-   }
-   
-   defer resp.Body.Close()
 }

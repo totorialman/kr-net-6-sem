@@ -52,7 +52,7 @@ func main() {
 	r.NotFoundHandler = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Not Found", http.StatusNotFound)
 	})
-	r.HandleFunc("/receive", handlers.HandleTransfer).Methods(http.MethodPost, http.MethodOptions)
+	r.HandleFunc("/transfer", handlers.HandleTransfer).Methods(http.MethodPost, http.MethodOptions)
 	r.HandleFunc("/send", handlers.HandleSend).Methods(http.MethodPost, http.MethodOptions)
 	http.Handle("/", r)
 
