@@ -5,9 +5,9 @@ import "time"
 const (
 	SegmentLostError = "lost"
 	KafkaReadPeriod  = 2 * time.Second
-	CodeUrl          = "http://192.168.123.120:8000/code" // адрес канального уровня
-	SegmentSize      = 100
-	ReceiveUrl = "http://192.168.123.140:3000/receive" // адрес websocket-сервера прикладного уровня
+	CodeUrl          = "mainc:8020/code" // адрес канального уровня
+	SegmentSize      = 2300
+	ReceiveUrl = "mainc:8020/receive" // адрес websocket-сервера прикладного уровня
 	KafkaAddr  = "kafka:9092"
 	KafkaTopic = "segments"
 )
